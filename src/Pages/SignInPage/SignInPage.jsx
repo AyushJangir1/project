@@ -1,4 +1,4 @@
-import * as React from 'react';
+// import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +13,10 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import './SignInPage.scss';
 import { Link } from "react-router-dom";
+import React , {useState} from 'react';
+import Axios from 'axios';
+
+
 
 function Copyright(props) {
   return (
@@ -27,22 +31,39 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignInPage() {
-  const handleSubmit1 = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginStatus, setLoginStatus] = useState("");
+  const [registerStatus, setRegisterStatus] = useState("");
+
+  const register =()=> {
+    Axios.post("http://localhost:3001/admin",{
+      username:email,
+      password:password,
+    }).then((response)=>{
+    if(response.data.message){
+      setRegisterStatus(response.data.message);
+    }else{
+      setRegisterStatus("ACCOUNT CREATED SUCCESSFULLY");
+    }
+    console.log(registerStatus);
+  });
   };
-  const handleSubmit2 = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  const login =()=>{
+    Axios.post("http://localhost:3001/student",{
+      email:email,
+      password:password,
+    }).then((response)=>{
+    if(response.data.message){
+      setLoginStatus(response.data.message);
+    }else{
+      setLoginStatus(response.data[0].email);
+    }
+    console.log(loginStatus);
+  });
+  };
+
   return (
     <>
   <div style={{ backgroundColor: '#99cc99' }}>
@@ -117,7 +138,7 @@ export default function SignInPage() {
                 <Typography component="h1" variant="h5">
                   Student
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit1} noValidate >
+                <Box component="form"  noValidate >
                   <TextField
                     className='inputBox'
                     margin="normal"
@@ -129,6 +150,9 @@ export default function SignInPage() {
                     autoComplete="email"
                     autoFocus
                   // sx={{ mt: "3px", mb: "2px" }}
+                  onChange={(e)=>{
+                    setEmail(e.target.value);
+                  }}
                   />
                   <TextField
                     margin="normal"
@@ -139,6 +163,9 @@ export default function SignInPage() {
                     type="password"
                     id="password"
                     autoComplete="current-password"
+                    onChange={(e)=>{
+                    setPassword(e.target.value);
+                  }}
                   />
                   <FormControlLabel
                     control={<Checkbox value="remember" color="primary" />}
@@ -146,10 +173,11 @@ export default function SignInPage() {
                   />
                   <Link to="/studentDashboard">
                     <Button
-                      type="submit"
+                      // type="submit"
                       fullWidth
                       variant="contained"
                       sx={{ mt: 3, mb: 2 }}
+                      onClick={login}
                     >
                       Sign In
                     </Button>
@@ -189,7 +217,7 @@ export default function SignInPage() {
                 <Typography component="h1" variant="h5">
                   Administration
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit2} noValidate >
+                <Box component="form" noValidate >
                   <TextField
                     className='inputBox'
                     margin="normal"
@@ -200,6 +228,9 @@ export default function SignInPage() {
                     name="email"
                     autoComplete="email"
                     autoFocus
+                    onChange={(e)=>{
+                    setEmail(e.target.value);
+                  }}
                   // sx={{ mt: "3px", mb: "2px" }}
                   />
                   <TextField
@@ -211,6 +242,9 @@ export default function SignInPage() {
                     type="password"
                     id="password"
                     autoComplete="current-password"
+                    onChange={(e)=>{
+                    setPassword(e.target.value);
+                  }}
                   />
                   <FormControlLabel
                     control={<Checkbox value="remember" color="primary" />}
@@ -218,10 +252,11 @@ export default function SignInPage() {
                   />
                   <Link to="/administratorDashboard">
                     <Button
-                      type="submit"
+                      // type="submit"
                       fullWidth
                       variant="contained"
                       sx={{ mt: 3, mb: 2 }}
+                      onClick={register}
                     >
                       Sign In
                     </Button>
